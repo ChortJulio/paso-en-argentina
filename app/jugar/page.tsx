@@ -44,7 +44,8 @@ export default function JugarPage() {
         const preguntasData = await response.json();
         setPreguntas(preguntasData);
         setLoading(false);
-      } catch (err) {
+      } catch (error) {
+        console.error("Error cargando datos:", error);
         setError("Error al cargar el juego");
         setLoading(false);
       }

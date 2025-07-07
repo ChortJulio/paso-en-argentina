@@ -10,8 +10,6 @@ export async function GET() {
       .select()
       .limit(10);
 
-    console.log("Preguntas obtenidas de la base de datos:", rows);
-
     // Transformar los datos para el frontend
     const preguntas = (rows ?? []).map((row) => ({
       id: row.id,
@@ -23,8 +21,6 @@ export async function GET() {
       explicacion: row.explicacion,
       categoria: row.categoria,
     }));
-
-    console.log("Preguntas obtenidas:", preguntas);
 
     return NextResponse.json(preguntas);
   } catch (error) {
