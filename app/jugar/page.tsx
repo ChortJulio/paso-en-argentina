@@ -10,8 +10,6 @@ import { ResultadosFinales } from "@/components/ResultadosFinales";
 import { useSounds } from "@/hooks/useSounds";
 import type { Pregunta, Participante, Voto } from "@/types/game";
 import { useRouter } from "next/navigation";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next";
 
 export default function JugarPage() {
   const [preguntas, setPreguntas] = useState<Pregunta[]>([]);
@@ -182,8 +180,6 @@ export default function JugarPage() {
 
   return (
     <div className="relative">
-      <Analytics />
-      <SpeedInsights />
       <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 p-4">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-6">
