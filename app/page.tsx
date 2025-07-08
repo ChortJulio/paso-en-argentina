@@ -9,7 +9,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Users, Zap, Trophy, Flag, RotateCcw, Play } from "lucide-react";
+import {
+  Users,
+  Zap,
+  Trophy,
+  Flag,
+  RotateCcw,
+  Play,
+  ExternalLink,
+} from "lucide-react";
+import Link from "next/link";
 import { ParticipantesModal } from "@/components/ParticipantesModal";
 import { useGamePersistence } from "@/hooks/useGamePersistence";
 import type { Participante } from "@/types/game";
@@ -152,7 +161,8 @@ export default function HomePage() {
                     2
                   </span>
                   <span>
-                    Cada jugador debe votar por la opción que cree correcta
+                    <strong>Todos los jugadores deben votar</strong> por la
+                    opción que creen correcta (es obligatorio)
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -160,12 +170,29 @@ export default function HomePage() {
                     3
                   </span>
                   <span>
-                    Ganá puntos extra con respuestas consecutivas correctas
+                    Ganá <strong>1 punto por pregunta acertada</strong>
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="bg-sky-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
                     4
+                  </span>
+                  <span>
+                    <strong>¡Bonus por racha!</strong> Más puntos por respuestas
+                    consecutivas correctas (2pts → 3pts)
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
+                    ⚠️
+                  </span>
+                  <span>
+                    <strong>Errar = 0 puntos</strong> y pierdes tu racha
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="bg-sky-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
+                    5
                   </span>
                   <span>¡Competí para ser el que más sabe de Argentina!</span>
                 </li>
@@ -180,6 +207,30 @@ export default function HomePage() {
               >
                 🎮 {showContinueOption ? "NUEVA PARTIDA" : "¡EMPEZAR A JUGAR!"}
               </Button>
+            </div>
+
+            {/* GitHub Link */}
+            <div className="text-center pt-6 border-t border-sky-200">
+              <div className="flex items-center justify-center gap-2 text-xs text-sky-600">
+                <Link
+                  href="https://x.com/chortjulio"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sky-600 hover:text-sky-800 transition-colors"
+                >
+                  <span>Hecho por ChortJulio</span>
+                </Link>
+                <span>•</span>
+                <Link
+                  href="https://github.com/ChortJulio/paso-en-argentina"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sky-600 hover:text-sky-800 transition-colors"
+                >
+                  <ExternalLink className="h-3 w-3" />
+                  <span>Código abierto</span>
+                </Link>
+              </div>
             </div>
           </CardContent>
         </Card>

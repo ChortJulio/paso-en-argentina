@@ -1,36 +1,139 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🇦🇷 ¿Pasó en Argentina?
 
-## Getting Started
+<div align="center">
 
-First, run the development server:
+![Logo del juego](public/og-image.png)
+
+**El juego de noticias increíbles pero reales sobre Argentina**
+
+[![Demo](https://img.shields.io/badge/🎮_Demo-Jugar_Ahora-yellow?style=for-the-badge)](https://www.paso-en-argentina.com/)
+[![GitHub](https://img.shields.io/badge/GitHub-Código_Abierto-blue?style=for-the-badge&logo=github)](https://github.com/ChortJulio/paso-en-argentina)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+
+</div>
+
+## 🎯 ¿Qué es esto?
+
+**¿Pasó en Argentina?** es un juego interactivo de preguntas y respuestas donde los jugadores deben adivinar si noticias increíbles realmente ocurrieron en Argentina.
+
+### 🌟 Características principales
+
+- 🎮 **Para grupos**: Hasta 25 participantes simultáneos
+- 🏆 **Sistema de puntuación**: 1 punto por acierto + bonus por rachas
+- ⚡ **Dinámico**: Sistema de rachas que otorga más puntos por respuestas consecutivas
+- 🎯 **Competitivo**: Ranking en tiempo real de participantes
+- 📱 **Responsive**: Funciona en móviles, tablets y desktop
+- 💾 **Progreso guardado**: Continúa partidas donde las dejaste
+
+## 🎲 ¿Cómo se juega?
+
+1. **Agrega participantes**: Cada jugador ingresa su nombre
+2. **Votación obligatoria**: Todos deben votar en cada pregunta
+3. **Sistema de puntos**:
+   - ✅ **1 punto** por respuesta correcta
+   - 🔥 **2 puntos** en racha de 1 acierto
+   - 🔥 **3 puntos** en racha de 2+ aciertos consecutivos
+   - ❌ **0 puntos** por error (se pierde la racha)
+4. **Compite**: ¡El que más puntos tenga gana!
+
+## 🚀 Demo en vivo
+
+**👉 [Jugar ahora en paso-en-argentina.com](https://www.paso-en-argentina.com/)**
+
+## 🛠️ Instalación local
+
+### Prerequisitos
+
+- Node.js 18+
+- npm, yarn, pnpm o bun
+
+### Paso a paso
+
+1. **Clona el repositorio**
+
+   ```bash
+   git clone https://github.com/ChortJulio/paso-en-argentina.git
+   cd paso-en-argentina
+   ```
+
+2. **Instala las dependencias**
+
+   ```bash
+   npm install
+   # o
+   yarn install
+   # o
+   pnpm install
+   ```
+
+3. **Configura las variables de entorno**
+
+   ```bash
+   cp .env.example
+   ```
+
+   > **Nota**: Actualmente se requieren variables de entorno especiales. El juego funciona PARCIALMENTE en el frontend.
+
+4. **Inicia el servidor de desarrollo**
+
+   ```bash
+   npm run dev
+   # o
+   yarn dev
+   # o
+   pnpm dev
+   ```
+
+5. **¡Listo!** Abre [http://localhost:3000](http://localhost:3000) en tu navegador
+
+### Scripts disponibles
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev      # Servidor de desarrollo
+npm run build    # Build para producción
+npm run start    # Servidor de producción
+npm run lint     # Ejecutar linter
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🏗️ Stack tecnológico
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+- **Lenguaje**: [TypeScript](https://www.typescriptlang.org/)
+- **Estilos**: [Tailwind CSS](https://tailwindcss.com/)
+- **Componentes**: [Radix UI](https://www.radix-ui.com/)
+- **Iconos**: [Lucide React](https://lucide.dev/)
+- **Deploy**: [Vercel](https://vercel.com/)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🤝 Contribuir
 
-## Learn More
+¡Las contribuciones son bienvenidas! Lee nuestra [guía de contribución](CONTRIBUTING.md) para saber cómo participar.
 
-To learn more about Next.js, take a look at the following resources:
+### Formas de contribuir
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 🐛 Reportar bugs
+- 💡 Sugerir nuevas funcionalidades
+- 📝 Mejorar la documentación
+- 🎨 Mejorar el diseño
+- ❓ Agregar más preguntas al juego
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📄 Licencia
 
-## Deploy on Vercel
+Este proyecto está bajo la licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 👨‍💻 Autor
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**ChortJulio**
+
+- GitHub: [@ChortJulio](https://github.com/ChortJulio)
+- Twitter: [@chortjulio](https://twitter.com/chortjulio)
+
+---
+
+<div align="center">
+
+**¿Te gustó el proyecto? ¡Dale una ⭐ en GitHub!**
+
+[🎮 Jugar ahora](https://www.paso-en-argentina.com/) • [🐛 Reportar bug](https://github.com/ChortJulio/paso-en-argentina/issues) • [💡 Sugerir feature](https://github.com/ChortJulio/paso-en-argentina/issues)
+
+</div>
