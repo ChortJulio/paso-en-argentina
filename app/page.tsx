@@ -118,14 +118,14 @@ export default function HomePage() {
                   Continuar partida anterior
                 </h3>
                 <p className="text-green-800 mb-4">
-                  Tienes una partida guardada con {sesion.participantes.length}{" "}
+                  Tenés una partida guardada con {sesion.participantes.length}{" "}
                   participantes.
                   {sesion.sesionesCompletadas > 0 &&
                     ` Han completado ${sesion.sesionesCompletadas} ronda${
                       sesion.sesionesCompletadas > 1 ? "s" : ""
                     }.`}
                 </p>
-                <div className="flex gap-3">
+                <div className="flex flex-col md:flex-row gap-3">
                   <Button
                     onClick={handleContinueGame}
                     className="bg-green-600 hover:bg-green-700 text-white font-semibold"
@@ -151,22 +151,22 @@ export default function HomePage() {
               </h3>
               <ol className="space-y-3 text-sky-800">
                 <li className="flex items-start gap-3">
-                  <span className="bg-sky-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
+                  <span className="bg-sky-600 text-white rounded-full min-w-[28px] w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">
                     1
                   </span>
                   <span>Agregá los nombres de todos los participantes</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-sky-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
+                  <span className="bg-sky-600 text-white rounded-full min-w-[28px] w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">
                     2
                   </span>
                   <span>
                     <strong>Todos los jugadores deben votar</strong> por la
-                    opción que creen correcta (es obligatorio)
+                    opción que creen correcta
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-sky-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
+                  <span className="bg-sky-600 text-white rounded-full min-w-[28px] w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">
                     3
                   </span>
                   <span>
@@ -174,25 +174,25 @@ export default function HomePage() {
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-sky-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
+                  <span className="bg-sky-600 text-white rounded-full min-w-[28px] w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">
                     4
                   </span>
                   <span>
                     <strong>¡Bonus por racha!</strong> Más puntos por respuestas
-                    consecutivas correctas (2pts → 3pts)
+                    consecutivas correctas
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
-                    ⚠️
+                  <span className="bg-red-500 text-white rounded-full min-w-[28px] w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    5
                   </span>
                   <span>
-                    <strong>Errar = 0 puntos</strong> y pierdes tu racha
+                    <strong>⚠️ Errar = 0 puntos</strong> y perdés tu racha
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-sky-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
-                    5
+                  <span className="bg-sky-600 text-white rounded-full min-w-[28px] w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    6
                   </span>
                   <span>¡Competí para ser el que más sabe de Argentina!</span>
                 </li>
