@@ -1,53 +1,64 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
-import { X, UserPlus, Users } from "lucide-react"
-import type { Participante } from "@/types/game"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { X, UserPlus, Users } from "lucide-react";
+import type { Participante } from "@/types/game";
 
 interface ParticipantesModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onStartGame: (participantes: Participante[]) => void
+  isOpen: boolean;
+  onClose: () => void;
+  onStartGame: (participantes: Participante[]) => void;
 }
 
-export function ParticipantesModal({ isOpen, onClose, onStartGame }: ParticipantesModalProps) {
-  const [participantes, setParticipantes] = useState<Participante[]>([])
-  const [nombreInput, setNombreInput] = useState("")
-  const [error, setError] = useState("")
+export function ParticipantesModal({
+  isOpen,
+  onClose,
+  onStartGame,
+}: ParticipantesModalProps) {
+  const [participantes, setParticipantes] = useState<Participante[]>([]);
+  const [nombreInput, setNombreInput] = useState("");
+  const [error, setError] = useState("");
 
   const agregarParticipante = () => {
-    const nombre = nombreInput.trim()
+    const nombre = nombreInput.trim();
 
     // Validaciones
     if (!nombre) {
-      setError("El nombre no puede estar vacío")
-      return
+      setError("El nombre no puede estar vacío");
+      return;
     }
 
     if (nombre.length > 25) {
-      setError("El nombre no puede tener más de 25 caracteres")
-      return
+      setError("El nombre no puede tener más de 25 caracteres");
+      return;
     }
 
     if (!/^[a-zA-Z0-9\s]+$/.test(nombre)) {
-      setError("Solo se permiten letras, números y espacios")
-      return
+      setError("Solo se permiten letras, números y espacios");
+      return;
     }
 
-    if (participantes.some((p) => p.nombre.toLowerCase() === nombre.toLowerCase())) {
-      setError("Ya existe un participante con ese nombre")
-      return
+    if (
+      participantes.some((p) => p.nombre.toLowerCase() === nombre.toLowerCase())
+    ) {
+      setError("Ya existe un participante con ese nombre");
+      return;
     }
 
     if (participantes.length >= 25) {
-      setError("Máximo 25 participantes")
-      return
+      setError("Máximo 25 participantes");
+      return;
     }
 
     const nuevoParticipante: Participante = {
@@ -56,30 +67,32 @@ export function ParticipantesModal({ isOpen, onClose, onStartGame }: Participant
       aciertos: 0,
       errores: 0,
       puntaje: 0,
-    }
+      rachaActual: 0,
+      mejorRacha: 0,
+    };
 
-    setParticipantes([...participantes, nuevoParticipante])
-    setNombreInput("")
-    setError("")
-  }
+    setParticipantes([...participantes, nuevoParticipante]);
+    setNombreInput("");
+    setError("");
+  };
 
   const eliminarParticipante = (id: string) => {
-    setParticipantes(participantes.filter((p) => p.id !== id))
-  }
+    setParticipantes(participantes.filter((p) => p.id !== id));
+  };
 
   const iniciarJuego = () => {
     if (participantes.length === 0) {
-      setError("Debe haber al menos un participante")
-      return
+      setError("Debe haber al menos un participante");
+      return;
     }
-    onStartGame(participantes)
-  }
+    onStartGame(participantes);
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      agregarParticipante()
+      agregarParticipante();
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -111,14 +124,20 @@ export function ParticipantesModal({ isOpen, onClose, onStartGame }: Participant
               </Button>
             </div>
 
-            {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
+            {error && (
+              <p className="text-red-600 text-sm font-medium">{error}</p>
+            )}
 
-            <p className="text-sm text-sky-700">{25 - participantes.length} participantes restantes</p>
+            <p className="text-sm text-sky-700">
+              {25 - participantes.length} participantes restantes
+            </p>
           </div>
 
           {participantes.length > 0 && (
             <div className="space-y-3">
-              <h3 className="font-semibold text-sky-900">Participantes agregados:</h3>
+              <h3 className="font-semibold text-sky-900">
+                Participantes agregados:
+              </h3>
               <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-3 bg-sky-50 rounded-lg border border-sky-200">
                 {participantes.map((participante) => (
                   <Badge
@@ -158,5 +177,5 @@ export function ParticipantesModal({ isOpen, onClose, onStartGame }: Participant
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

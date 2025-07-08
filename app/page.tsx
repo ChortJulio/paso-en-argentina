@@ -1,23 +1,54 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Zap, Trophy, Flag } from "lucide-react"
-import { ParticipantesModal } from "@/components/ParticipantesModal"
-import type { Participante } from "@/types/game"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Users, Zap, Trophy, Flag, RotateCcw, Play } from "lucide-react";
+import { ParticipantesModal } from "@/components/ParticipantesModal";
+import { useGamePersistence } from "@/hooks/useGamePersistence";
+import type { Participante } from "@/types/game";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
-  const [showModal, setShowModal] = useState(false)
-  const router = useRouter()
+  const [showModal, setShowModal] = useState(false);
+  const [showContinueOption, setShowContinueOption] = useState(false);
+  const { sesion, crearNuevaSesion, continuarSesion, resetearSesion } =
+    useGamePersistence();
+  const router = useRouter();
 
-  const handleStartGame = (participantes: Participante[]) => {
-    // Guardar participantes en sessionStorage para la página de juego
-    sessionStorage.setItem("participantes", JSON.stringify(participantes))
-    setShowModal(false)
-    router.push("/jugar")
-  }
+  useEffect(() => {
+    if (sesion && sesion.participantes.length > 0) {
+      setShowContinueOption(true);
+    }
+  }, [sesion]);
+
+  const handleStartNewGame = (participantes: Participante[]) => {
+    crearNuevaSesion(participantes);
+    setShowModal(false);
+    router.push("/jugar");
+  };
+
+  const handleContinueGame = () => {
+    if (sesion) {
+      const participantesActualizados = sesion.participantes.map((p) => ({
+        ...p,
+        rachaActual: 0, // Reset racha para nueva sesión
+      }));
+      continuarSesion(participantesActualizados);
+      router.push("/jugar");
+    }
+  };
+
+  const handleResetGame = () => {
+    resetearSesion();
+    setShowContinueOption(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-400 via-white to-sky-300 flex items-center justify-center p-4">
@@ -25,10 +56,14 @@ export default function HomePage() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-4 mb-4">
             <Flag className="h-12 w-12 text-sky-600" />
-            <h1 className="text-5xl md:text-7xl font-black text-sky-800 drop-shadow-lg">¿PASÓ EN ARGENTINA?</h1>
+            <h1 className="text-5xl md:text-7xl font-black text-sky-800 drop-shadow-lg">
+              ¿PASÓ EN ARGENTINA?
+            </h1>
             <Flag className="h-12 w-12 text-sky-600" />
           </div>
-          <p className="text-xl md:text-2xl text-sky-700 font-medium">El juego de noticias increíbles pero reales</p>
+          <p className="text-xl md:text-2xl text-sky-700 font-medium">
+            El juego de noticias increíbles pero reales
+          </p>
         </div>
 
         <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-2 border-sky-200">
@@ -53,20 +88,58 @@ export default function HomePage() {
                 <Zap className="h-8 w-8 text-yellow-600" />
                 <div>
                   <h3 className="font-semibold text-yellow-900">Dinámico</h3>
-                  <p className="text-sm text-yellow-700">10 preguntas sorprendentes</p>
+                  <p className="text-sm text-yellow-700">Sistema de rachas</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
                 <Trophy className="h-8 w-8 text-green-600" />
                 <div>
                   <h3 className="font-semibold text-green-900">Competitivo</h3>
-                  <p className="text-sm text-green-700">Sistema de puntajes</p>
+                  <p className="text-sm text-green-700">
+                    Puntajes y posiciones
+                  </p>
                 </div>
               </div>
             </div>
 
+            {showContinueOption && sesion && (
+              <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg border-2 border-green-200">
+                <h3 className="font-semibold text-green-900 mb-3 text-lg flex items-center gap-2">
+                  <Play className="h-5 w-5" />
+                  Continuar partida anterior
+                </h3>
+                <p className="text-green-800 mb-4">
+                  Tienes una partida guardada con {sesion.participantes.length}{" "}
+                  participantes.
+                  {sesion.sesionesCompletadas > 0 &&
+                    ` Han completado ${sesion.sesionesCompletadas} ronda${
+                      sesion.sesionesCompletadas > 1 ? "s" : ""
+                    }.`}
+                </p>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={handleContinueGame}
+                    className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+                  >
+                    <Play className="mr-2 h-4 w-4" />
+                    Continuar Jugando
+                  </Button>
+                  <Button
+                    onClick={handleResetGame}
+                    variant="outline"
+                    className="border-red-300 text-red-700 hover:bg-red-50 bg-transparent"
+                  >
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    Empezar de Cero
+                  </Button>
+                </div>
+              </div>
+            )}
+
             <div className="bg-gradient-to-r from-sky-50 to-white p-6 rounded-lg border-2 border-sky-200">
-              <h3 className="font-semibold text-sky-900 mb-3 text-lg">¿Cómo jugar?</h3>
+              <h3 className="font-semibold text-sky-900 mb-3 text-lg">
+                ¿Cómo jugar?
+              </h3>
               <ol className="space-y-3 text-sky-800">
                 <li className="flex items-start gap-3">
                   <span className="bg-sky-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
@@ -78,19 +151,23 @@ export default function HomePage() {
                   <span className="bg-sky-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
                     2
                   </span>
-                  <span>Cada jugador vota por la opción que cree correcta</span>
+                  <span>
+                    Cada jugador debe votar por la opción que cree correcta
+                  </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="bg-sky-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
                     3
                   </span>
-                  <span>El administrador revela la respuesta correcta</span>
+                  <span>
+                    Ganá puntos extra con respuestas consecutivas correctas
+                  </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="bg-sky-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
                     4
                   </span>
-                  <span>¡Sumá puntos y descubrí quién sabe más!</span>
+                  <span>¡Competí para ser el que más sabe de Argentina!</span>
                 </li>
               </ol>
             </div>
@@ -101,14 +178,18 @@ export default function HomePage() {
                 size="lg"
                 className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-bold text-xl px-12 py-6 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               >
-                🎮 ¡EMPEZAR A JUGAR!
+                🎮 {showContinueOption ? "NUEVA PARTIDA" : "¡EMPEZAR A JUGAR!"}
               </Button>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <ParticipantesModal isOpen={showModal} onClose={() => setShowModal(false)} onStartGame={handleStartGame} />
+      <ParticipantesModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onStartGame={handleStartNewGame}
+      />
     </div>
-  )
+  );
 }
