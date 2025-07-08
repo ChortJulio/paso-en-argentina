@@ -13,6 +13,7 @@ import {
   Trophy,
   AlertCircle,
   Users,
+  X,
 } from "lucide-react";
 import { ResultadosFinales } from "@/components/ResultadosFinales";
 import { ParticipanteSelector } from "@/components/ParticipanteSelector";
@@ -109,17 +110,28 @@ export default function JugarPage() {
   };
 
   const handleSeleccionarParticipante = (participanteId: string) => {
-    // playSelect();
-
     // Remover voto anterior del participante si existe
     const nuevosVotos = votos.filter(
       (v) => v.participanteId !== participanteId
     );
     // Agregar nuevo voto
-    setVotos([
+    const votosActualizados = [
       ...nuevosVotos,
       { participanteId, opcionIndex: opcionSeleccionada },
-    ]);
+    ];
+    setVotos(votosActualizados);
+
+    // Cerrar el dialog si todos los participantes han votado
+    if (votosActualizados.length === participantes.length) {
+      setShowSelector(false);
+    }
+  };
+
+  const handleQuitarVoto = (participanteId: string) => {
+    const nuevosVotos = votos.filter(
+      (v) => v.participanteId !== participanteId
+    );
+    setVotos(nuevosVotos);
   };
 
   const getParticipantesDisponibles = () => {
@@ -130,8 +142,16 @@ export default function JugarPage() {
   const getVotosParaOpcion = (opcionIndex: number) => {
     return votos
       .filter((v) => v.opcionIndex === opcionIndex)
-      .map((v) => participantes.find((p) => p.id === v.participanteId)?.nombre)
-      .filter(Boolean);
+      .map((v) => {
+        const participante = participantes.find(
+          (p) => p.id === v.participanteId
+        );
+        return {
+          participanteId: v.participanteId,
+          nombre: participante?.nombre ?? "",
+        };
+      })
+      .filter((v) => v.nombre);
   };
 
   const todosVotaron = () => {
@@ -336,7 +356,7 @@ export default function JugarPage() {
             </Button>
             <Badge
               variant="secondary"
-              className="bg-white/90 text-sky-800 text-lg px-4 py-2 font-bold"
+              className="bg-white/90 text-sky-800 text-sm px-4 py-2 font-bold"
             >
               Pregunta {preguntaActual + 1} de {preguntas.length}
             </Badge>
@@ -395,14 +415,29 @@ export default function JugarPage() {
                       <span>Votos ({getVotosParaOpcion(index).length}):</span>
                     </div>
                     <div className="flex flex-wrap gap-2 min-h-[2rem]">
-                      {getVotosParaOpcion(index).map((nombre, i) => (
-                        <Badge
-                          key={i}
-                          variant="outline"
-                          className="bg-white border-sky-300 text-sky-800"
+                      {getVotosParaOpcion(index).map((voto, i) => (
+                        <div
+                          key={`${voto.participanteId}-${i}`}
+                          className="flex items-center gap-1"
                         >
-                          {nombre}
-                        </Badge>
+                          <Badge
+                            variant="outline"
+                            className="bg-white border-sky-300 text-sky-800"
+                          >
+                            {voto.nombre}
+                          </Badge>
+                          {!mostrarRespuesta && (
+                            <button
+                              onClick={() =>
+                                handleQuitarVoto(voto.participanteId)
+                              }
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full p-0.5 transition-colors"
+                              title={`Quitar voto de ${voto.nombre}`}
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          )}
+                        </div>
                       ))}
                       {getVotosParaOpcion(index).length === 0 && (
                         <span className="text-gray-400 text-sm italic">
