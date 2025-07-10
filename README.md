@@ -4,7 +4,7 @@
 
 ![Logo del juego](public/og-image.png)
 
-**El juego de noticias increíbles pero reales sobre Argentina**
+**El juego de sucesos increíbles pero reales sobre Argentina**
 
 [![Demo](https://img.shields.io/badge/🎮_Demo-Jugar_Ahora-yellow?style=for-the-badge)](https://www.paso-en-argentina.com/)
 [![GitHub](https://img.shields.io/badge/GitHub-Código_Abierto-blue?style=for-the-badge&logo=github)](https://github.com/ChortJulio/paso-en-argentina)
@@ -15,7 +15,7 @@
 
 ## 🎯 ¿Qué es esto?
 
-**¿Pasó en Argentina?** es un juego interactivo de preguntas y respuestas donde los jugadores deben adivinar si noticias increíbles realmente ocurrieron en Argentina.
+**¿Pasó en Argentina?** es un juego interactivo de preguntas y respuestas donde los jugadores deben adivinar si los sucesos insólitos realmente ocurrieron en Argentina.
 
 ### 🌟 Características principales
 
