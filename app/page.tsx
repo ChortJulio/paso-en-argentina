@@ -2,13 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Users,
   Zap,
@@ -71,26 +65,23 @@ export default function HomePage() {
             <Flag className="h-12 w-12 text-sky-600" />
           </div>
           <p className="text-xl md:text-2xl text-sky-700 font-medium">
-            El juego de noticias insólitas pero reales
+            El juego de sucesos insólitos pero reales
           </p>
         </div>
 
         <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-2 border-sky-200">
           <CardHeader className="text-center pb-4 bg-gradient-to-r from-sky-50 to-white">
             <CardTitle className="text-2xl md:text-3xl text-sky-900">
-              Descubrí qué cosas insólitas pasaron realmente
-            </CardTitle>
-            <CardDescription className="text-lg text-sky-700">
               10 preguntas que te van a sorprender sobre Argentina
-            </CardDescription>
+            </CardTitle>
 
             <div className="bg-gradient-to-r from-blue-50 to-sky-50 p-4 rounded-lg border border-sky-200 mt-4">
               <p className="text-sky-800 text-base leading-relaxed">
                 En cada pregunta hay <strong>3 opciones</strong>: solo{" "}
                 <strong>una realmente pasó en Argentina</strong> (todas con
                 fuente) y las otras dos son falsas. El objetivo es{" "}
-                <strong>identificar cuál es la verdadera</strong> entre las
-                noticias insólitas pero reales.
+                <strong>identificar cuál es la verdadera</strong> entre los
+                sucesos insólitos pero reales.
               </p>
             </div>
           </CardHeader>
