@@ -21,11 +21,20 @@ import { PosicionesModal } from "@/components/PosicionesModal";
 import { LoadingTransition } from "@/components/LoadingTransition";
 import { useSounds } from "@/hooks/useSounds";
 import { useGamePersistence } from "@/hooks/useGamePersistence";
-import type { Pregunta, Participante, Voto } from "@/types/game";
+import type {
+  Pregunta,
+  // PreguntaCompleta,
+  Participante,
+  Voto,
+} from "@/types/game";
 import { useRouter } from "next/navigation";
+import { fetchPreguntas, revelarRespuesta } from "@/utils/apiSecurity";
 
 export default function JugarPage() {
   const [preguntas, setPreguntas] = useState<Pregunta[]>([]);
+  const [respuestas, setRespuestas] = useState<
+    Record<string, { correcta: string; explicacion: string; fuente: string }>
+  >({});
   const [participantes, setParticipantes] = useState<Participante[]>([]);
   const [preguntaActual, setPreguntaActual] = useState(0);
   const [votos, setVotos] = useState<Voto[]>([]);
@@ -33,6 +42,7 @@ export default function JugarPage() {
   const [juegoTerminado, setJuegoTerminado] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingTransition, setLoadingTransition] = useState(false);
+  const [loadingRespuesta, setLoadingRespuesta] = useState(false);
   const [error, setError] = useState("");
   const [showSelector, setShowSelector] = useState(false);
   const [opcionSeleccionada, setOpcionSeleccionada] = useState(-1);
@@ -74,11 +84,7 @@ export default function JugarPage() {
         setJuegoTerminado(sesion.juegoTerminado);
 
         // Cargar preguntas desde la API
-        console.log("Carga primera pregunta API");
-        const response = await fetch("/api/preguntas");
-        if (!response.ok) throw new Error("Error al cargar preguntas");
-
-        const preguntasData = await response.json();
+        const preguntasData = await fetchPreguntas();
         setPreguntas(preguntasData);
         setLoading(false);
       } catch (error) {
@@ -158,70 +164,93 @@ export default function JugarPage() {
     return votos.length === participantes.length;
   };
 
-  const handleMostrarRespuesta = () => {
+  const handleMostrarRespuesta = async () => {
     if (!todosVotaron()) return;
 
     setMostrarRespuesta(true);
+    setLoadingRespuesta(true);
 
     const pregunta = preguntas[preguntaActual];
-    const indiceCorrecta = pregunta.opciones.findIndex(
-      (opcion) => opcion === pregunta.correcta
-    );
 
-    // Actualizar puntajes con sistema de rachas
-    const participantesActualizados = participantes.map((participante) => {
-      const votoParticipante = votos.find(
-        (v) => v.participanteId === participante.id
+    try {
+      // Obtener la respuesta correcta desde la API
+      const respuestaData = await revelarRespuesta(pregunta.id);
+
+      // Guardar la respuesta revelada
+      setRespuestas((prev) => ({
+        ...prev,
+        [pregunta.id]: {
+          correcta: respuestaData.correcta,
+          explicacion: respuestaData.explicacion,
+          fuente: respuestaData.fuente,
+        },
+      }));
+
+      // Encontrar el índice de la respuesta correcta
+      const indiceCorrecta = pregunta.opciones.findIndex(
+        (opcion) => opcion?.trim() === respuestaData.correcta?.trim()
       );
-      if (votoParticipante) {
-        const acerto = votoParticipante.opcionIndex === indiceCorrecta;
-        const nuevaRacha = acerto ? participante.rachaActual + 1 : 0;
-        const puntosGanados = acerto
-          ? calcularPuntajeConRacha(participante.rachaActual)
-          : 0;
 
+      // Actualizar puntajes con sistema de rachas
+      const participantesActualizados = participantes.map((participante) => {
+        const votoParticipante = votos.find(
+          (v) => v.participanteId === participante.id
+        );
+        if (votoParticipante) {
+          const acerto = votoParticipante.opcionIndex === indiceCorrecta;
+          const nuevaRacha = acerto ? participante.rachaActual + 1 : 0;
+          const puntosGanados = acerto
+            ? calcularPuntajeConRacha(participante.rachaActual)
+            : 0;
+
+          return {
+            ...participante,
+            aciertos: participante.aciertos + (acerto ? 1 : 0),
+            errores: participante.errores + (acerto ? 0 : 1),
+            puntaje: participante.puntaje + puntosGanados,
+            rachaActual: nuevaRacha,
+            mejorRacha: Math.max(participante.mejorRacha, nuevaRacha),
+          };
+        }
         return {
           ...participante,
-          aciertos: participante.aciertos + (acerto ? 1 : 0),
-          errores: participante.errores + (acerto ? 0 : 1),
-          puntaje: participante.puntaje + puntosGanados,
-          rachaActual: nuevaRacha,
-          mejorRacha: Math.max(participante.mejorRacha, nuevaRacha),
+          errores: participante.errores + 1,
+          rachaActual: 0,
         };
+      });
+
+      setParticipantes(participantesActualizados);
+
+      // Guardar estado después de actualizar puntajes
+      if (isLoaded && sesion && hasInitialized.current) {
+        const sesionActualizada = {
+          ...sesion,
+          participantes: participantesActualizados,
+          preguntaActual,
+          votos,
+          juegoTerminado,
+        };
+        guardarSesion(sesionActualizada);
       }
-      return {
-        ...participante,
-        errores: participante.errores + 1,
-        rachaActual: 0,
-      };
-    });
 
-    setParticipantes(participantesActualizados);
-
-    // Guardar estado después de actualizar puntajes
-    if (isLoaded && sesion && hasInitialized.current) {
-      const sesionActualizada = {
-        ...sesion,
-        participantes: participantesActualizados,
-        preguntaActual,
-        votos,
-        juegoTerminado,
-      };
-      guardarSesion(sesionActualizada);
+      // Reproducir sonidos
+      setTimeout(() => {
+        const votosCorrectos = votos.filter(
+          (v) => v.opcionIndex === indiceCorrecta
+        );
+        if (votosCorrectos.length > 0) {
+          playCorrect();
+        }
+        if (votos.length > votosCorrectos.length) {
+          setTimeout(() => playIncorrect(), 500);
+        }
+      }, 500);
+    } catch (error) {
+      console.error("Error al revelar respuesta:", error);
+      // En caso de error, seguir con el juego sin respuesta correcta
+    } finally {
+      setLoadingRespuesta(false);
     }
-
-    // Reproducir sonidos
-    setTimeout(() => {
-      const votosCorrectos = votos.filter(
-        (v) => v.opcionIndex === indiceCorrecta
-      );
-      if (votosCorrectos.length > 0) {
-        playCorrect();
-      }
-      if (votos.length > votosCorrectos.length) {
-        setTimeout(() => playIncorrect(), 500);
-      }
-    }, 500);
   };
 
   const handleSiguiente = () => {
@@ -280,16 +309,38 @@ export default function JugarPage() {
       setVotos([]);
       setMostrarRespuesta(false);
       setJuegoTerminado(false);
+      setRespuestas({}); // Limpiar respuestas reveladas
+      setLoadingRespuesta(false); // Resetear estado de loading
 
       // Reset initialization flag
       hasInitialized.current = false;
 
       // Cargar nuevas preguntas
-      console.log("Recargando preguntas API");
-      fetch("/api/preguntas")
-        .then((res) => res.json())
-        .then(setPreguntas)
+      fetchPreguntas()
+        .then((preguntasData) => {
+          setPreguntas(preguntasData);
+        })
         .catch(console.error);
+    }
+  };
+
+  // Función auxiliar para determinar el tipo de fuente y el texto del enlace
+  const getFuenteInfo = (fuente: string) => {
+    if (!fuente) return null;
+
+    const isYoutube =
+      fuente.includes("youtube.com") || fuente.includes("youtu.be");
+    const isInstagram = fuente.includes("instagram.com");
+    const isTikTok = fuente.includes("tiktok.com");
+
+    if (isYoutube) {
+      return { icon: "🎥", text: "Ver video en YouTube", type: "video" };
+    } else if (isInstagram) {
+      return { icon: "📸", text: "Ver en Instagram", type: "social" };
+    } else if (isTikTok) {
+      return { icon: "🎬", text: "Ver en TikTok", type: "social" };
+    } else {
+      return { icon: "📰", text: "Leer artículo completo", type: "article" };
     }
   };
 
@@ -326,9 +377,13 @@ export default function JugarPage() {
   }
 
   const pregunta = preguntas[preguntaActual];
-  const indiceCorrecta = mostrarRespuesta
-    ? pregunta.opciones.findIndex((opcion) => opcion === pregunta.correcta)
-    : -1;
+  const respuestaActual = respuestas[pregunta.id];
+  const indiceCorrecta =
+    mostrarRespuesta && respuestaActual
+      ? pregunta.opciones.findIndex(
+          (opcion) => opcion?.trim() === respuestaActual.correcta?.trim()
+        )
+      : -1;
   const participantesFaltantes = participantes.length - votos.length;
 
   return (
@@ -375,10 +430,12 @@ export default function JugarPage() {
                 <div
                   key={index}
                   className={`p-6 rounded-lg border-2 transition-all duration-300 ${
-                    mostrarRespuesta
+                    mostrarRespuesta && !loadingRespuesta
                       ? index === indiceCorrecta
                         ? "bg-green-50 border-green-500 shadow-lg transform scale-105"
                         : "bg-red-50 border-red-300 opacity-75"
+                      : mostrarRespuesta && loadingRespuesta
+                      ? "bg-blue-50 border-blue-200"
                       : "bg-sky-50 border-sky-200 hover:bg-sky-100 hover:border-sky-300"
                   }`}
                 >
@@ -387,7 +444,7 @@ export default function JugarPage() {
                       {opcion}
                     </p>
                     <div className="flex items-center gap-2">
-                      {mostrarRespuesta && (
+                      {mostrarRespuesta && !loadingRespuesta && (
                         <div>
                           {index === indiceCorrecta ? (
                             <CheckCircle className="h-8 w-8 text-green-600" />
@@ -395,6 +452,9 @@ export default function JugarPage() {
                             <XCircle className="h-8 w-8 text-red-500" />
                           )}
                         </div>
+                      )}
+                      {mostrarRespuesta && loadingRespuesta && (
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
                       )}
                       {!mostrarRespuesta && (
                         <Button
@@ -471,9 +531,55 @@ export default function JugarPage() {
                 <h3 className="font-semibold text-blue-900 mb-2 text-lg">
                   ✨ Explicación:
                 </h3>
-                <p className="text-blue-800 text-lg leading-relaxed">
-                  {pregunta.explicacion}
-                </p>
+                {loadingRespuesta ? (
+                  <div className="flex items-center gap-3 text-blue-800">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                    <span className="text-lg">
+                      Verificando respuesta correcta...
+                    </span>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-blue-800 text-lg leading-relaxed">
+                      {respuestaActual?.explicacion ||
+                        "Explicación no disponible"}
+                    </p>
+                    {respuestaActual?.fuente && (
+                      <div className="border-t border-blue-200 pt-4">
+                        {(() => {
+                          const fuenteInfo = getFuenteInfo(
+                            respuestaActual.fuente
+                          );
+                          return fuenteInfo ? (
+                            <a
+                              href={respuestaActual.fuente}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors group"
+                            >
+                              <span className="text-xl">{fuenteInfo.icon}</span>
+                              <span className="group-hover:underline">
+                                {fuenteInfo.text}
+                              </span>
+                              <svg
+                                className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
+                                <path d="M5 5a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2v-2a1 1 0 10-2 0v2H5V7h2a1 1 0 000-2H5z"></path>
+                              </svg>
+                            </a>
+                          ) : (
+                            <span className="text-blue-600 text-sm">
+                              Fuente disponible
+                            </span>
+                          );
+                        })()}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
@@ -494,12 +600,22 @@ export default function JugarPage() {
               ) : (
                 <Button
                   onClick={handleSiguiente}
+                  disabled={loadingRespuesta}
                   size="lg"
-                  className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold text-xl px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  className={`bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold text-xl px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 ${
+                    loadingRespuesta ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 >
-                  {preguntaActual < preguntas.length - 1
-                    ? "➡️ Siguiente Pregunta"
-                    : "🏁 Ver Resultados"}
+                  {loadingRespuesta ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      Cargando...
+                    </>
+                  ) : preguntaActual < preguntas.length - 1 ? (
+                    "➡️ Siguiente Pregunta"
+                  ) : (
+                    "🏁 Ver Resultados"
+                  )}
                 </Button>
               )}
             </div>
