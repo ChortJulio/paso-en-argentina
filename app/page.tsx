@@ -2,13 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Users,
   Zap,
@@ -71,18 +65,25 @@ export default function HomePage() {
             <Flag className="h-12 w-12 text-sky-600" />
           </div>
           <p className="text-xl md:text-2xl text-sky-700 font-medium">
-            El juego de noticias increíbles pero reales
+            El juego de sucesos insólitos pero reales
           </p>
         </div>
 
         <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-2 border-sky-200">
           <CardHeader className="text-center pb-4 bg-gradient-to-r from-sky-50 to-white">
             <CardTitle className="text-2xl md:text-3xl text-sky-900">
-              Descubrí qué cosas increíbles pasaron realmente
-            </CardTitle>
-            <CardDescription className="text-lg text-sky-700">
               10 preguntas que te van a sorprender sobre Argentina
-            </CardDescription>
+            </CardTitle>
+
+            <div className="bg-gradient-to-r from-blue-50 to-sky-50 p-4 rounded-lg border border-sky-200 mt-4">
+              <p className="text-sky-800 text-base leading-relaxed">
+                En cada pregunta hay <strong>3 opciones</strong>: solo{" "}
+                <strong>una realmente pasó en Argentina</strong> (todas con
+                fuente) y las otras dos son falsas. El objetivo es{" "}
+                <strong>identificar cuál es la verdadera</strong> entre los
+                sucesos insólitos pero reales.
+              </p>
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid md:grid-cols-3 gap-4">
@@ -97,7 +98,9 @@ export default function HomePage() {
                 <Zap className="h-8 w-8 text-yellow-600" />
                 <div>
                   <h3 className="font-semibold text-yellow-900">Dinámico</h3>
-                  <p className="text-sm text-yellow-700">Sistema de rachas</p>
+                  <p className="text-sm text-yellow-700">
+                    Pasá el celu al siguiente participante
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
@@ -119,9 +122,9 @@ export default function HomePage() {
                 </h3>
                 <p className="text-green-800 mb-4">
                   Tenés una partida guardada con {sesion.participantes.length}{" "}
-                  participantes.
+                  participante{sesion.participantes.length !== 1 && "s"}.
                   {sesion.sesionesCompletadas > 0 &&
-                    ` Han completado ${sesion.sesionesCompletadas} ronda${
+                    ` Completaron ${sesion.sesionesCompletadas} ronda${
                       sesion.sesionesCompletadas > 1 ? "s" : ""
                     }.`}
                 </p>
@@ -149,20 +152,25 @@ export default function HomePage() {
               <h3 className="font-semibold text-sky-900 mb-3 text-lg">
                 ¿Cómo jugar?
               </h3>
-              <ol className="space-y-3 text-sky-800">
+              <ol className="space-y-3 text-sky-800 mb-6">
                 <li className="flex items-start gap-3">
                   <span className="bg-sky-600 text-white rounded-full min-w-[28px] w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">
                     1
                   </span>
-                  <span>Agregá los nombres de todos los participantes</span>
+                  <span>
+                    Agregá los nombres de <strong>todos</strong> los
+                    participantes
+                  </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="bg-sky-600 text-white rounded-full min-w-[28px] w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">
                     2
                   </span>
                   <span>
-                    <strong>Todos los jugadores deben votar</strong> por la
-                    opción que creen correcta
+                    Votar por la opción que se crea correcta y{" "}
+                    <strong>
+                      pasar el celular, o computadora, al siguiente participante
+                    </strong>
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -170,7 +178,8 @@ export default function HomePage() {
                     3
                   </span>
                   <span>
-                    Ganá <strong>1 punto por pregunta acertada</strong>
+                    Cuando <strong>todos hayan votado</strong>, presionar
+                    &quot;Mostrar la respuesta correcta&quot;
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -178,25 +187,45 @@ export default function HomePage() {
                     4
                   </span>
                   <span>
-                    <strong>¡Bonus por racha!</strong> Más puntos por respuestas
-                    consecutivas correctas
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="bg-red-500 text-white rounded-full min-w-[28px] w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">
-                    5
-                  </span>
-                  <span>
-                    <strong>⚠️ Errar = 0 puntos</strong> y perdés tu racha
+                    Repetir por las <strong>10 preguntas</strong>
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="bg-sky-600 text-white rounded-full min-w-[28px] w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0">
-                    6
+                    5
                   </span>
-                  <span>¡Competí para ser el que más sabe de Argentina!</span>
+                  <span>
+                    <strong>¡El que más puntos tenga gana!</strong>
+                  </span>
                 </li>
               </ol>
+
+              <div className="border-t border-sky-200 pt-4">
+                <h4 className="font-semibold text-sky-900 mb-3 text-base">
+                  Puntaje
+                </h4>
+                <ul className="space-y-2 text-sky-800">
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">✔️</span>
+                    <span>
+                      Ganá <strong>1 punto por pregunta acertada</strong>
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-yellow-600 font-bold">🔥</span>
+                    <span>
+                      <strong>¡Bonus por racha!</strong> Más puntos por
+                      respuestas consecutivas correctas
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-red-600 font-bold">⚠️</span>
+                    <span>
+                      <strong>Errar = 0 puntos</strong>, pero perdés tu racha
+                    </span>
+                  </li>
+                </ul>
+              </div>
             </div>
 
             <div className="text-center pt-4">
@@ -218,7 +247,7 @@ export default function HomePage() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-sky-600 hover:text-sky-800 transition-colors"
                 >
-                  <span>Hecho por ChortJulio</span>
+                  <span>Hecho por Julio Chort</span>
                 </Link>
                 <span>•</span>
                 <Link

@@ -4,7 +4,7 @@
 
 ![Logo del juego](public/og-image.png)
 
-**El juego de noticias increíbles pero reales sobre Argentina**
+**El juego de sucesos increíbles pero reales sobre Argentina**
 
 [![Demo](https://img.shields.io/badge/🎮_Demo-Jugar_Ahora-yellow?style=for-the-badge)](https://www.paso-en-argentina.com/)
 [![GitHub](https://img.shields.io/badge/GitHub-Código_Abierto-blue?style=for-the-badge&logo=github)](https://github.com/ChortJulio/paso-en-argentina)
@@ -15,13 +15,14 @@
 
 ## 🎯 ¿Qué es esto?
 
-**¿Pasó en Argentina?** es un juego interactivo de preguntas y respuestas donde los jugadores deben adivinar si noticias increíbles realmente ocurrieron en Argentina.
+**¿Pasó en Argentina?** es un juego interactivo de preguntas y respuestas donde los jugadores deben adivinar si los sucesos insólitos realmente ocurrieron en Argentina.
 
 ### 🌟 Características principales
 
 - 🎮 **Para grupos**: Hasta 25 participantes simultáneos
 - 🏆 **Sistema de puntuación**: 1 punto por acierto + bonus por rachas
-- ⚡ **Dinámico**: Sistema de rachas que otorga más puntos por respuestas consecutivas
+- ⚡ **Dinámico**: Pasar el celular o computadora al siguiente jugador
+- 🔥 **Sistema de rachas**: Otorga más puntos por respuestas consecutivas
 - 🎯 **Competitivo**: Ranking en tiempo real de participantes
 - 📱 **Responsive**: Funciona en móviles, tablets y desktop
 - 💾 **Progreso guardado**: Continúa partidas donde las dejaste
@@ -30,12 +31,13 @@
 
 1. **Agrega participantes**: Cada jugador ingresa su nombre
 2. **Votación obligatoria**: Todos deben votar en cada pregunta
-3. **Sistema de puntos**:
+3. **Pasar el dispositivo**: El jugador actual pasa el celular o computadora al siguiente
+4. **Sistema de puntos**:
    - ✅ **1 punto** por respuesta correcta
    - 🔥 **2 puntos** en racha de 1 acierto
    - 🔥 **3 puntos** en racha de 2+ aciertos consecutivos
    - ❌ **0 puntos** por error (se pierde la racha)
-4. **Compite**: ¡El que más puntos tenga gana!
+5. **Compite**: ¡El que más puntos tenga gana!
 
 ## 🚀 Demo en vivo
 
@@ -104,6 +106,17 @@ npm run lint     # Ejecutar linter
 - **Componentes**: [Radix UI](https://www.radix-ui.com/)
 - **Iconos**: [Lucide React](https://lucide.dev/)
 - **Deploy**: [Vercel](https://vercel.com/)
+
+## 🔒 Características de Seguridad
+
+Este proyecto incluye múltiples capas de seguridad para proteger la API:
+
+- **Verificación de origen**: Solo dominios autorizados pueden acceder a la API
+- **API Key opcional**: Protección adicional en producción
+- **Logging de seguridad**: Monitoreo de intentos de acceso no autorizados
+- **Validación de User-Agent**: Bloqueo de bots maliciosos básicos
+
+Para más detalles, consulta la [documentación de seguridad](docs/SECURITY.md).
 
 ## 🤝 Contribuir
 

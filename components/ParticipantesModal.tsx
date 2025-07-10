@@ -44,7 +44,7 @@ export function ParticipantesModal({
       return;
     }
 
-    if (!/^[a-zA-Z0-9\s]+$/.test(nombre)) {
+    if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9\s]+$/.test(nombre)) {
       setError("Solo se permiten letras, números y espacios");
       return;
     }
@@ -100,7 +100,8 @@ export function ParticipantesModal({
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-sky-900 flex items-center gap-2">
             <Users className="h-6 w-6" />
-            Añadir participantes ({participantes.length}/25)
+            Añadir participante{participantes.length === 1 ? "" : "s"} (
+            {participantes.length}/25)
           </DialogTitle>
         </DialogHeader>
 
@@ -111,7 +112,7 @@ export function ParticipantesModal({
                 placeholder="Nombre del participante..."
                 value={nombreInput}
                 onChange={(e) => setNombreInput(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 className="flex-1 border-sky-300 focus:border-sky-500"
                 maxLength={25}
               />
@@ -164,7 +165,8 @@ export function ParticipantesModal({
               disabled={participantes.length === 0}
               className="flex-1 bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-bold py-3"
             >
-              🎮 Iniciar Juego ({participantes.length} participantes)
+              🎮 Iniciar Juego ({participantes.length} participante
+              {participantes.length === 1 ? "" : "s"})
             </Button>
             <Button
               onClick={onClose}

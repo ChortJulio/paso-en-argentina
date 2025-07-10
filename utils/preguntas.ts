@@ -1,17 +1,24 @@
 import { createClient } from "@/utils/supabase/server";
-import { NextResponse } from "next/server";
+import type { Pregunta } from "@/types/game";
 
-export async function GET() {
+export async function obtenerPreguntasAleatorias(
+  limite: number = 10
+): Promise<Pregunta[]> {
   try {
     const supabase = createClient();
-    // Obtener 10 preguntas aleatorias
-    const { data: rows } = await supabase
+
+    // Obtener preguntas aleatorias
+    const { data: rows, error } = await supabase
       .from("preguntas_random")
       .select()
-      .limit(10);
+      .limit(limite);
+
+    if (error) {
+      throw new Error(`Error al obtener preguntas: ${error.message}`);
+    }
 
     // Transformar los datos para el frontend
-    const preguntas = (rows ?? []).map((row) => ({
+    const preguntas: Pregunta[] = (rows ?? []).map((row) => ({
       id: row.id,
       pregunta: row.pregunta,
       opciones: [row.correcta, row.alternativa_1, row.alternativa_2].sort(
@@ -22,12 +29,9 @@ export async function GET() {
       categoria: row.categoria,
     }));
 
-    return NextResponse.json(preguntas);
+    return preguntas;
   } catch (error) {
     console.error("Error fetching preguntas:", error);
-    return NextResponse.json(
-      { error: "Error al cargar preguntas" },
-      { status: 500 }
-    );
+    throw new Error("Error al cargar preguntas");
   }
 }

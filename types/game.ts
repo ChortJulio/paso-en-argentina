@@ -2,9 +2,14 @@ export interface Pregunta {
   id: string;
   pregunta: string;
   opciones: string[];
+  categoria: string;
+  // correcta y explicacion se obtienen después via API separada
+}
+
+export interface PreguntaCompleta extends Pregunta {
   correcta: string;
   explicacion: string;
-  categoria: string;
+  fuente: string;
 }
 
 export interface Participante {

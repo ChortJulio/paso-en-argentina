@@ -7,21 +7,23 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { User, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import type { Participante } from "@/types/game";
 
 interface ParticipanteSelectorProps {
-  isOpen: boolean;
-  onClose: () => void;
-  participantesDisponibles: Participante[];
-  onSeleccionar: (participanteId: string) => void;
-  opcionTexto: string;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly participantes: Participante[];
+  readonly participantesQueVotaron: string[]; // IDs de participantes que ya votaron
+  readonly onSeleccionar: (participanteId: string) => void;
+  readonly opcionTexto: string;
 }
 
 export function ParticipanteSelector({
   isOpen,
   onClose,
-  participantesDisponibles,
+  participantes,
+  participantesQueVotaron,
   onSeleccionar,
   opcionTexto,
 }: ParticipanteSelectorProps) {
@@ -44,24 +46,42 @@ export function ParticipanteSelector({
         </DialogHeader>
 
         <div className="space-y-4">
-          {participantesDisponibles.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <User className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>Todos los participantes ya votaron</p>
-            </div>
-          ) : (
-            <div className="grid gap-2 max-h-60 overflow-y-auto">
-              {participantesDisponibles.map((participante) => (
+          <div className="grid gap-2 max-h-60 overflow-y-auto">
+            {participantes.map((participante) => {
+              const yaVoto = participantesQueVotaron.includes(participante.id);
+
+              return (
                 <Button
                   key={participante.id}
                   onClick={() => handleSeleccionar(participante.id)}
                   variant="outline"
-                  className="justify-start p-4 h-auto border-sky-200 hover:bg-sky-50 hover:border-sky-300"
+                  className={`justify-start p-4 h-auto transition-all ${
+                    yaVoto
+                      ? "border-green-300 bg-green-50 hover:bg-green-100 hover:border-green-400"
+                      : "border-sky-200 hover:bg-sky-50 hover:border-sky-300"
+                  }`}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <span className="font-medium text-sky-900">
-                      {participante.nombre}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {yaVoto && (
+                        <span className="text-green-600 font-bold">✓</span>
+                      )}
+                      <span
+                        className={`font-medium ${
+                          yaVoto ? "text-green-900" : "text-sky-900"
+                        }`}
+                      >
+                        {participante.nombre}
+                      </span>
+                      {yaVoto && (
+                        <Badge
+                          variant="secondary"
+                          className="bg-yellow-100 text-yellow-800 text-xs"
+                        >
+                          Cambiar voto
+                        </Badge>
+                      )}
+                    </div>
                     <div className="flex gap-1">
                       <Badge
                         variant="secondary"
@@ -80,9 +100,9 @@ export function ParticipanteSelector({
                     </div>
                   </div>
                 </Button>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
 
           <Button
             onClick={onClose}
